@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.dbs.utils.Overdraft;
 
@@ -21,13 +23,16 @@ public class Customer {
 	String accountNumber;
 
 	@Column(name = "name")
+	@NotBlank
 	String name;
 
 	@Column(name = "clear_balance")
+	@NotNull
 	Double clearBalance;
 
 	@Column(name = "overdraft", length = 4)
 	@Enumerated(EnumType.STRING)
+	@NotNull
 	Overdraft overdraft;
 
 	public Customer() {

@@ -19,6 +19,7 @@ import com.dbs.exceptions.TransactionNotValidException;
 import com.dbs.repo.CustomerRepo;
 import com.dbs.repo.TransactionRepo;
 import com.dbs.utils.Permutation;
+import com.dbs.utils.TransferType;
 
 @Service
 public class TransactionService {
@@ -44,8 +45,12 @@ public class TransactionService {
 		Customer cust = custService.getCustomerByAcctNumber(trans.getSenderAcctNumber());
 		String custName = cust.getName();
 
+		System.out.println(trans);
+		
 		// validate transferType field
-
+		if(!transferType.equals("BANK") && !transferType.equals("CUSTOMER")) {
+			throw new TransactionNotValidException("The transfer type is not recognizable");
+		}
 		if ((transferType.equals("BANK")
 				&& (!receiverName.startsWith("HDFC BANK") || !custName.startsWith("HDFC BANK")))
 				|| (transferType.equals("CUSTOMER")
@@ -84,6 +89,7 @@ public class TransactionService {
 		transaction.setReceiverName(trans.getReceiverName().strip());
 		transaction.setTimestamp(new Date());
 		transaction.setAmount(amount);
+		transaction.setTransferType(trans.getTransferType().equals("BANK") ? TransferType.BANK : TransferType.CUSTOMER);
 		cust.setClearBalance(custAcctBalance - (amount + transFee));
 		custRepo.save(cust);
 

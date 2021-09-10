@@ -15,6 +15,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 import com.dbs.utils.TransferType;
 
@@ -28,31 +31,40 @@ public class Transaction {
 	Long transactionId;
 
 	@Column(name = "amount")
+	@NotNull
+	@Positive
 	Double amount;
 
 	@Column(name = "receiver_account_number")
+	@NotBlank
 	String receiverAccountNumber;
 
 	@Column(name = "receiver_name")
+	@NotBlank
 	String receiverName;
 
 	@ManyToOne()
 	@JoinColumn(name = "account_number")
+	@NotNull
 	Customer customer;
 
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "message_code")
+	@NotNull
 	MessageCode messageCode;
 
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "receiver_bic",referencedColumnName = "bic")
+	@JoinColumn(name = "receiver_bic", referencedColumnName = "bic")
+	@NotNull
 	BankBic receiverBic;
-	
-	@Column(name = "transfer_type",length=10)
+
+	@Column(name = "transfer_type", length = 10)
 	@Enumerated(EnumType.STRING)
+	@NotNull
 	TransferType transferType;
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@NotNull
 	Date timestamp;
 
 	public Transaction() {
@@ -134,6 +146,14 @@ public class Transaction {
 
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
+	}
+
+	public TransferType getTransferType() {
+		return transferType;
+	}
+
+	public void setTransferType(TransferType transferType) {
+		this.transferType = transferType;
 	}
 
 	@Override
