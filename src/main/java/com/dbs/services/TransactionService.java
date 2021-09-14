@@ -2,6 +2,9 @@ package com.dbs.services;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
@@ -9,6 +12,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
@@ -98,6 +103,28 @@ public class TransactionService {
 
 		return transaction;
 
+	}
+	
+	public Page<Transaction> getTransactionsBetween(String _startDate,String _endDate,int page,int size){
+		Date startDate=null;
+		Date endDate=null;
+		try {
+			startDate = new SimpleDateFormat("yyyy-MM-dd").parse(_startDate);
+			endDate = new SimpleDateFormat("yyyy-MM-dd").parse(_endDate);
+			
+			// add 23hrs 59 minutes 59 seconds to the end date.
+			Calendar calendar = Calendar.getInstance();
+		    calendar.setTime(endDate);
+		    calendar.add(Calendar.HOUR_OF_DAY, 23);
+		    calendar.add(Calendar.MINUTE, 59);
+		    calendar.add(Calendar.SECOND, 59);
+		    endDate = calendar.getTime();
+			
+		} catch (ParseException e) {
+			
+		}
+		Page<Transaction> pageRes = transRepo.findByTimestampBetween(startDate, endDate,PageRequest.of(page, size));
+		return pageRes;
 	}
 
 	private boolean isReceiverInSdnList(String name) throws FileNotFoundException {
